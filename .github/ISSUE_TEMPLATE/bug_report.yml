@@ -6,14 +6,7 @@ body:
     attributes:
       value: |
         Before you begin
-  - type: checkboxes
-    id: terms
-    attributes:
-      label: CheckList
-      description: By submitting this issue, you agree to follow our [Code of Conduct]()
-      options:
-        - label: I agree to follow this project's Code of Conduct
-          required: true
+
   - type: dropdown
     id: _branches
     attributes:
@@ -24,68 +17,4 @@ body:
         - safeguard
         - set-output
     validations:
-      required: true
-  - type: dropdown
-    id: _labels
-    attributes:
-      label: Repository labels
-      description: Fetched by action
-      options:
-        - bot
-        - bug
-        - ci
-        - documentation
-        - duplicate
-        - enhancement
-        - good first issue
-        - help wanted
-        - invalid
-        - question
-        - wontfix
-    validations:
-      required: true
-  - type: dropdown
-    id: _dates
-    attributes:
-      label: Updating Dates
-      description: Choose a day next week
-      options:
-        - 2024-2-13
-        - 2024-2-14
-        - 2024-2-15
-        - 2024-2-16
-        - 2024-2-17
-        - 2024-2-18
-        - 2024-2-19
-    validations:
-      required: true
-  - type: textarea
-    id: steps
-    attributes:
-      label: Steps To Reproduce
-      value: |
-        1. 
-        2. 
-        3.
-    validations:
-      required: true
-  - type: textarea
-    id: expected
-    attributes:
-      label: Expected Behavior
-    validations:
-      required: true
-  - type: textarea
-    id: actual
-    attributes:
-      label: Actual Behavior
-      description: Provide screenshots/screencasts if relevant
-    validations:
-      required: true
-  - type: textarea
-    id: error
-    attributes:
-      label: Error Message & Stack Trace
-      description: Provide logging outputs/errors if relevant
-    validations:
-      required: false
+      required: true  
