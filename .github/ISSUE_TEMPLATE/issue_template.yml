@@ -1,0 +1,25 @@
+name: Issue Template
+description: Sample description for an issue template
+title: Issue Template
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Issue Template
+        This is a sample issue template.
+  - type: input
+    id: example_input
+    attributes:
+      label: Example Input
+      description: This is an example input field
+      placeholder: Example input placeholder
+  - type: dropdown
+    attributes:
+      label: Default repository visibility
+      options:
+        - all
+        - private
+      default: 0
+    validations:
+      required: true
+
