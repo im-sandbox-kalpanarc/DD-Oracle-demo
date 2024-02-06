@@ -1,3 +1,12 @@
+---
+name: Custom issue template
+about: Describe this issue template's purpose here.
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 # Acceptance criteria
 - [ ] _i.e. There is a Workflow for enforcing both repos and organizations_
 - [ ] _i.e. The Workflow has a `workflow_dispatch` trigger that accepts an entity type and entity name_
