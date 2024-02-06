@@ -17,24 +17,11 @@
 <summary>Click to select branch</summary>
 
 <select id="branchSelect">
-  <!-- JavaScript will populate options here -->
+  <option value="master">master</option>
+  <option value="dev">dev</option>
+  <option value="feature-branch">feature-branch</option>
+  <!-- Add other branches here -->
 </select>
 
-<script>
-  // Fetch branches dynamically using GitHub API
-  fetch("https://api.github.com/repos/<owner>/<repo>/branches")
-    .then(response => response.json())
-    .then(data => {
-      const branchSelect = document.getElementById("branchSelect");
-      data.forEach(branch => {
-        const option = document.createElement("option");
-        option.text = branch.name;
-        option.value = branch.name;
-        branchSelect.appendChild(option);
-      });
-    })
-    .catch(error => {
-      console.error("Error fetching branches:", error);
-    });
-</script>
+
 </details>
