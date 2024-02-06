@@ -1,4 +1,4 @@
-name:  Bug Report
+name: Bug Report
 description: File a bug report
 title: Template
 body:
@@ -6,16 +6,16 @@ body:
     attributes:
       value: |
         Before you begin
-
   - type: dropdown
     id: _branches
     attributes:
       label: Repository Branches
       description: Fetched by action
-      options:       
+      options:
+        - first
         - main
-        - safeguard
-        - set-output
+        - second
+        - test
     validations:
       required: true  
 
