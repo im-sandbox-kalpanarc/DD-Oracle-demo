@@ -14,12 +14,10 @@ body:
       description: This is an example input field
       placeholder: Example input placeholder
   - type: dropdown
+    id: _branchNames
     attributes:
-      label: Default repository visibility
+      label: Branch Name
+      description: branch name
       options:
-        - all
-        - private
-      default: 0
-    validations:
-      required: true
+        - main
 
