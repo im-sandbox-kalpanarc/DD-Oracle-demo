@@ -15,12 +15,7 @@ jobs:
       # needed in order to reference the local action
       branch: ${{ env.job_ref }}
       branches: ${{ steps.branches.outputs.result }}
-      labels: ${{ steps.labels.outputs.result }}
-      long: ${{ steps.long.outputs.result }}
-      long2: ${{ steps.long2.outputs.result }}
-      dates: ${{ steps.dates.outputs.result }}
-      year_end: ${{ steps.year_end.outputs.result }}
-      timestamp: ${{ steps.timestamp.outputs.value }}
+    
     steps:
       - name: Setting branch for committing
         # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
@@ -49,63 +44,7 @@ jobs:
             return github
               .rest.repos.listBranches(context.repo)
               .then((res) => res.data.map((b) => b.name));
-      - name: Get labels
-        id: labels
-        uses: actions/github-script@v6
-        with:
-          result-encoding: string
-          # https://octokit.github.io/rest.js
-          # https://docs.github.com/en/rest/issues/labels#list-labels-for-a-repository
-          script: |
-            return github
-              .rest.issues.listLabelsForRepo(context.repo)
-              .then((res) => res.data.map((l) => l.name));
-      - name: Generate a long array
-        id: long
-        uses: actions/github-script@v6
-        with:
-          result-encoding: string
-          script: |
-            return new Array(500).fill(0).map((_, i) => `#${i + 1}`);
-      - name: Generate another long array
-        id: long2
-        uses: actions/github-script@v6
-        with:
-          result-encoding: string
-          script: |
-            return new Array(500).fill(0).map((_, i) => `#${i + 1}`).reverse();
-      - name: Get next week
-        id: dates
-        uses: actions/github-script@v6
-        with:
-          # unfortunately I didn't manage to import moment
-          # https://github.com/actions/github-script/issues/275
-          script: |
-            const dayMs = 24 * 60 * 60 * 1000;
-            function format(dayDiff) {
-              const date = new Date(Date.now() + dayDiff * dayMs);
-              return `${date.getFullYear()}-${date.getMonth() + 1}-${
-                date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
-              }`;
-            }
-            return new Array(7).fill(0).map((_, i) => format(i + 7));
-      - name: Get dates until end of year
-        id: year_end
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const dayMs = 24 * 60 * 60 * 1000;
-            function format(dayDiff) {
-              const date = new Date(Date.now() + dayDiff * dayMs);
-              return `${date.getFullYear()}-${date.getMonth() + 1}-${
-                date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
-              }`;
-            }
-            const jan1 = new Date(new Date().getFullYear() + 1, 0, 1)
-            return new Array(Math.floor((jan1 - new Date()) / dayMs)).fill(0).map((_, i) => format(i + 1));
-      - name: Timestamp
-        id: timestamp
-        run: echo "::set-output name=value::$(date +'%Y-%m-%d %H:%M:%S') "
+      
   update-bug-report:
     name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
     runs-on: ubuntu-latest
@@ -115,6 +54,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ needs.pre.outputs.branch }}
+
       - name: Update branches
         id: branches
         uses: ShaMan123/gha-populate-form-version@v2.0.2
@@ -123,28 +63,11 @@ jobs:
           dropdown: _branches
           options: ${{ needs.pre.outputs.branches }}
           dry_run: no-push
+
       - name: Bug report modified? ${{ steps.branches.outputs.modified }}
         run: |
 
-      - name: Update labels
-        id: labels
-        uses: ShaMan123/gha-populate-form-version@v2.0.2
-        with:
-          form: .github/ISSUE_TEMPLATE/bug_report.yml
-          dropdown: _labels
-          options: ${{ needs.pre.outputs.labels }}
-          dry_run: no-push
-      - name: Bug report modified? ${{ steps.labels.outputs.modified }}
-        run: |
-
-      - name: Update dates
-        id: dates
-        uses: ShaMan123/gha-populate-form-version@v2.0.2
-        with:
-          form: .github/ISSUE_TEMPLATE/bug_report.yml
-          dropdown: _dates
-          options: ${{ needs.pre.outputs.dates }}
-          dry_run: no-push
-      - name: Pushed? ${{ steps.branches.outputs.modified || steps.labels.outputs.modified || steps.dates.outputs.modified  }}
-        if: steps.branches.outputs.modified || steps.labels.outputs.modified || steps.dates.outputs.modified
+      
+      - name: Pushed? ${{ steps.branches.outputs.modified }}
+        if: steps.branches.outputs.modified
         run: git push 
