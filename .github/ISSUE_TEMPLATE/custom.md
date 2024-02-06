@@ -12,16 +12,4 @@
 ### Actual Behavior
 [Describe what actually happened]
 
-### Branch (please select the appropriate branch)
-<details>
-<summary>Click to select branch</summary>
 
-<select id="branchSelect">
-  <option value="master">master</option>
-  <option value="dev">dev</option>
-  <option value="feature-branch">feature-branch</option>
-  <!-- Add other branches here -->
-</select>
-
-
-</details>
