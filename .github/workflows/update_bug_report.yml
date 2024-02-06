@@ -15,6 +15,7 @@ jobs:
       # needed in order to reference the local action
       branch: ${{ env.job_ref }}
       branches: ${{ steps.branches.outputs.result }}
+      releases: ${{ steps.releases.outputs.result }}
     
     steps:
       - name: Setting branch for committing
@@ -44,6 +45,16 @@ jobs:
             return github
               .rest.repos.listBranches(context.repo)
               .then((res) => res.data.map((b) => b.name));
+      - name: Get releases
+        id: releases
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            return github
+              .rest.repos.listReleases(context.repo)
+              .then((res) => res.data.map((r) => r.tag_name));
+                
       
   update-bug-report:
     name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
@@ -64,8 +75,14 @@ jobs:
           options: ${{ needs.pre.outputs.branches }}
           dry_run: no-push
 
-      - name: Bug report modified? ${{ steps.branches.outputs.modified }}
-        run: |
+      - name: Update releases
+        id: releases
+        uses: ./
+        with:
+          form: .github/ISSUE_TEMPLATE/bug_report.yml
+          dropdown: _releases
+          options: ${{ needs.pre.outputs.releases }}
+          dry_run: no-push
 
       
       - name: Pushed? ${{ steps.branches.outputs.modified }}
