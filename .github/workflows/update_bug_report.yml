@@ -57,7 +57,7 @@ jobs:
 
       - name: Update branches
         id: branches
-        uses: ShaMan123/gha-populate-form-version@v2.0.2
+        uses: ./
         with:
           form: .github/ISSUE_TEMPLATE/bug_report.yml
           dropdown: _branches
