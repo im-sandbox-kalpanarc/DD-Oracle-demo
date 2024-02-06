@@ -17,14 +17,13 @@ body:
         - second
         - test
     validations:
-      required: true  
-
+      required: true
   - type: dropdown
     id: _releases
     attributes:
       label: Repository releases
       description: Fetched by action
-      options:       
-        - v1.0        
+      options:
+        - v1.0
     validations:
-      required: true      
+      required: true
