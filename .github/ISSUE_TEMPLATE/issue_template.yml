@@ -16,11 +16,10 @@ body:
   - type: dropdown
     attributes:
       label: Default repository visibility
-      options: "{{ dropdown_options }}"
+      options:
+        - all
+        - private
+      default: 0
     validations:
       required: true
 
-variables:
-  dropdown_options:
-    - all
-    - private
