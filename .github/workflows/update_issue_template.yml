@@ -18,6 +18,8 @@ jobs:
       - name: Check if branch was created or deleted
         id: branch_eventType
         run: |
+          echo ${{ github.event_name }}
+          echo ${{ github.event }}
           if [ "${{ github.event.ref_type }}" == "branch" ]; then
             echo "Branch created: ${GITHUB_REF#refs/heads/}"
             echo "result=branch" >> "$GITHUB_OUTPUT"         
