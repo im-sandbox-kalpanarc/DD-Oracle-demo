@@ -92,7 +92,10 @@ jobs:
           script: |
             return github
               .rest.repos.getAllEnvironments(context.repo)
-              .then((res) => (res.data.environments ? res.data.environments.map((b) => b.name) : []));    
+              .then((res) => {
+                const environments = res.data.environments.map((b) => b.name);
+                console.log(environments);
+                return environments ? environments.map((b) => b.name) : []);    
 
   update-bug-report:
     name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
