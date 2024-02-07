@@ -1,23 +1,33 @@
-name: Issue Template
-description: Sample description for an issue template
-title: Issue Template
+name: Issue Template for Deployment
+description: Issue for Deployment process
+title: Deployment Issue
 body:
   - type: markdown
     attributes:
       value: |
-        ## Issue Template
-        This is a sample issue template.
-  - type: input
-    id: example_input
-    attributes:
-      label: Example Input
-      description: This is an example input field
-      placeholder: Example input placeholder
+        Please fill below information for deployment
   - type: dropdown
-    id: _branchNames
+    id: _branches
     attributes:
-      label: Branch Name
-      description: branch name
+      label: Repository Branches
+      description: Fetched by action
       options:
+        - KalpanaReddyC-patch-1
+        - first
         - main
-
+        - second
+        - test
+    validations:
+      required: true
+  - type: dropdown
+    id: _releases
+    attributes:
+      label: Repository releases
+      description: Fetched by action
+      options:
+        - v4.0
+        - v3.0
+        - v2.0
+        - v1.0
+    validations:
+      required: true

@@ -89,18 +89,18 @@ jobs:
 
       - name: Update branches
         id: branches
-        uses: ./
+        uses: ./custom_actions/update_issue_form_template
         with:
-          form: .github/ISSUE_TEMPLATE/bug_report.yml
+          form: .github/ISSUE_TEMPLATE/issue_template.yml
           dropdown: _branches
           options: ${{ needs.pre.outputs.branches }}
           dry_run: no-push
 
       - name: Update releases
         id: releases
-        uses: ./
+        uses: ./custom_actions/update_issue_form_template
         with:
-          form: .github/ISSUE_TEMPLATE/bug_report.yml
+          form: .github/ISSUE_TEMPLATE/issue_template.yml
           dropdown: _releases
           options: ${{ needs.pre.outputs.releases }}
           dry_run: no-push
