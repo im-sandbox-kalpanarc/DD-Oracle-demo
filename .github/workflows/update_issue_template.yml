@@ -93,9 +93,10 @@ jobs:
             return github
               .rest.repos.getAllEnvironments(context.repo)
               .then((res) => {
-                const environments = res.data.environments.map((b) => b.name);
+                const environments = res.data.environments;
                 console.log(environments);
-                return environments ? environments.map((b) => b.name) : []);    
+                return environments ? environments.map((b) => b.name) : [];
+              });    
 
   update-bug-report:
     name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
