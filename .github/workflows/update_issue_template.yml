@@ -3,7 +3,9 @@ name: 🚀 Update Issue template
 on:  
   workflow_dispatch:  
   create:
-  delete:  
+  delete:
+  release:
+    types: [created, published, deleted]
 
 jobs:
   branch_event:
