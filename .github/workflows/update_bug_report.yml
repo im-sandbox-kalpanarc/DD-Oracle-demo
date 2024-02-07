@@ -1,25 +1,50 @@
-name: 🚀 Update Bug Report
+name: 🚀 Update Issue template Report
 
-# https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
-# https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
 on:  
 
   # use in production
   workflow_dispatch:
+  release:
+    types: [released]
+  push:
+    branches:
+      - '*'   
 
 jobs:
+  branch_event:
+    runs-on: ubuntu-latest
+    outputs:
+      branch_event_type: ${{ steps.branch_eventType.outputs.result }}
+    steps:
+      - name: Check if branch was created or deleted
+        id: branch_eventType
+        run: |
+          if [ "${{ github.event_name }}" = "create" ]; then
+            echo "Branch created: ${GITHUB_REF#refs/heads/}"
+            echo "result=no-push" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "delete" ]; then
+            echo "Branch deleted: ${GITHUB_REF#refs/heads/}"
+            echo "result=no-push" >> "$GITHUB_OUTPUT"
+          else
+            echo "Push event on existing branch: ${GITHUB_REF#refs/heads/}"
+            echo "result=push" >> "$GITHUB_OUTPUT"
+          fi
+          
   pre:
     name: Prepare context for other jobs
     runs-on: ubuntu-latest
+    #check if above job output value is no-push
+    needs: branch_event
+    if: ${{ needs.branch_event.outputs.branch_event_type }} == 'no-push'
     outputs:
       # needed in order to reference the local action
-      branch: ${{ env.job_ref }}
+      branch: ${{ steps.branch.outputs.job_ref }}
       branches: ${{ steps.branches.outputs.result }}
       releases: ${{ steps.releases.outputs.result }}
     
     steps:
       - name: Setting branch for committing
-        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
+        id: branch
         run: |
           BRANCH=""
           if [ ${{ github.event_name == 'release' }} == true ]; then
@@ -31,11 +56,11 @@ jobs:
           else
             BRANCH=${{ github.ref }}
           fi
-          echo "job_ref=$BRANCH" >> $GITHUB_ENV
+          echo "job_ref=$BRANCH" >> $GITHUB_OUTPUT
           echo "Branch: $BRANCH"
+
       - name: Get branches
         id: branches
-        # https://github.com/actions/github-script
         uses: actions/github-script@v6
         with:
           result-encoding: string
@@ -45,6 +70,7 @@ jobs:
             return github
               .rest.repos.listBranches(context.repo)
               .then((res) => res.data.map((b) => b.name));
+
       - name: Get releases
         id: releases
         uses: actions/github-script@v6
@@ -54,8 +80,7 @@ jobs:
             return github
               .rest.repos.listReleases(context.repo)
               .then((res) => res.data.map((r) => r.tag_name));
-                
-      
+  
   update-bug-report:
     name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
     runs-on: ubuntu-latest
@@ -83,7 +108,6 @@ jobs:
           dropdown: _releases
           options: ${{ needs.pre.outputs.releases }}
           dry_run: no-push
-
       
       - name: Pushed? ${{ steps.branches.outputs.modified }}
         if: steps.branches.outputs.modified
