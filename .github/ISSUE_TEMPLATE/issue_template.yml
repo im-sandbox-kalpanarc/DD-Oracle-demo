@@ -10,7 +10,7 @@ body:
     id: _branches
     attributes:
       label: Repository Branches
-      description: Fetched by action
+      description: Branches to deploy
       options:
         - KalpanaReddyC-patch-1
         - first
@@ -21,10 +21,20 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: _environments
+    attributes:
+      label: Environment
+      description: Environment to deploy
+      options:
+        - dev
+        - qa       
+    validations:
+      required: true    
+  - type: dropdown
     id: _releases
     attributes:
       label: Repository releases
-      description: Fetched by action
+      description: Releases to deploy
       options:
         - v7.0
         - '6'
