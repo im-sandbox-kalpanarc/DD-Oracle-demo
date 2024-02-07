@@ -129,6 +129,7 @@ jobs:
       - name: Update environments
         id: environments
         uses: ./actions/update-issue-form-template
+        if: ${{ needs.pre.outputs.environments != '[]' }}
         with:
           form: .github/ISSUE_TEMPLATE/issue_template.yml
           dropdown: _environments
