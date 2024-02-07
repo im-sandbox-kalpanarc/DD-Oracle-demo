@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
   release:
     types: [released]
-  push:
-    branches:
-      - '*'   
+  create:   
+  delete:
+    
 
 jobs:
   branch_event:
@@ -18,23 +18,20 @@ jobs:
       - name: Check if branch was created or deleted
         id: branch_eventType
         run: |
-          if [ "${{ github.event_name }}" = "create" ]; then
+          if [ "${{ github.event.ref_type }}" == "branch" ]; then
             echo "Branch created: ${GITHUB_REF#refs/heads/}"
-            echo "result=no-push" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "delete" ]; then
-            echo "Branch deleted: ${GITHUB_REF#refs/heads/}"
-            echo "result=no-push" >> "$GITHUB_OUTPUT"
+            echo "result=branch" >> "$GITHUB_OUTPUT"         
           else
-            echo "Push event on existing branch: ${GITHUB_REF#refs/heads/}"
-            echo "result=push" >> "$GITHUB_OUTPUT"
+            echo "Branch deleted: ${GITHUB_REF#refs/heads/}"
+            echo "result=not-branch" >> "$GITHUB_OUTPUT"
           fi
 
   pre:
     name: Prepare context for other jobs
     runs-on: ubuntu-latest
-    #check if above job output value is no-push
+    #check if above job output value is branch
     needs: branch_event
-    if: ${{ needs.branch_event.outputs.branch_event_type == 'no-push' }}
+    if: ${{ needs.branch_event.outputs.branch_event_type == 'branch' }}
     outputs:
       # needed in order to reference the local action
       branch: ${{ steps.branch.outputs.job_ref }}
