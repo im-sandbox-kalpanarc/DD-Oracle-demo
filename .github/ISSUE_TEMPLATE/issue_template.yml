@@ -26,8 +26,8 @@ body:
       label: Environment
       description: Environment to deploy
       options:
-        - dev
         - qa
+        - prod
     validations:
       required: true
   - type: dropdown
