@@ -18,7 +18,6 @@ body:
         - main
         - second
         - test
-        - testing
     validations:
       required: true
   - type: dropdown
