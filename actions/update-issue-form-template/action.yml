@@ -85,7 +85,6 @@ inputs:
       - no-commit
       - no-push
 
-# https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs#example-defining-outputs-for-a-job
 outputs:
   form:
     description: JSON stringified form

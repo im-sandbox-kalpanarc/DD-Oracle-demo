@@ -90,7 +90,7 @@ jobs:
 
       - name: Update branches
         id: branches
-        uses: ./custom_actions/update_issue_form_template
+        uses: ./actions/update-issue-form-template
         with:
           form: .github/ISSUE_TEMPLATE/issue_template.yml
           dropdown: _branches
@@ -99,7 +99,7 @@ jobs:
 
       - name: Update releases
         id: releases
-        uses: ./custom_actions/update_issue_form_template
+        uses: ./actions/update-issue-form-template
         with:
           form: .github/ISSUE_TEMPLATE/issue_template.yml
           dropdown: _releases
