@@ -1,9 +1,7 @@
 name: 🚀 Update Issue template
 
 on:  
-  workflow_dispatch:
-  release:
-      types: [published, created, released, deleted]  
+  workflow_dispatch:  
   create:   
   delete:
     
@@ -18,13 +16,12 @@ jobs:
         id: branch_eventType
         run: |
           echo ${{ github.event_name }}
-          echo ${{ github.event }}
-          if [ "${{ github.event.ref_type }}" == "branch" ]; then
+            if [ "${{ github.event.ref_type }}" == "branch" ]  || [ "${{ github.event_name }}" == "release" ]; then
             echo "Branch created: ${GITHUB_REF#refs/heads/}"
-            echo "result=branch" >> "$GITHUB_OUTPUT"         
+            echo "result=true" >> "$GITHUB_OUTPUT"         
           else
             echo "Branch deleted: ${GITHUB_REF#refs/heads/}"
-            echo "result=not-branch" >> "$GITHUB_OUTPUT"
+            echo "result=false" >> "$GITHUB_OUTPUT"
           fi
 
   pre:
@@ -32,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     #check if above job output value is branch
     needs: branch_event
-    if: ${{ needs.branch_event.outputs.branch_event_type == 'branch' }}
+    if: ${{ needs.branch_event.outputs.branch_event_type == 'true' }}
     outputs:
       # needed in order to reference the local action
       branch: ${{ steps.branch.outputs.job_ref }}
