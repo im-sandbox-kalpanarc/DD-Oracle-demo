@@ -2,7 +2,6 @@ name: 🚀 Update Issue template Report
 
 on:  
 
-  # use in production
   workflow_dispatch:
   release:
     types: [released]
@@ -29,7 +28,7 @@ jobs:
             echo "Push event on existing branch: ${GITHUB_REF#refs/heads/}"
             echo "result=push" >> "$GITHUB_OUTPUT"
           fi
-          
+
   pre:
     name: Prepare context for other jobs
     runs-on: ubuntu-latest
