@@ -91,7 +91,7 @@ jobs:
           result-encoding: string
           script: |
             return github
-              .rest.repos.getEnvironment(context.repo)
+              .rest.repos.getAllEnvironments(context.repo)
               .then((res) => res.data.map((e) => e.name));     
 
   update-bug-report:
