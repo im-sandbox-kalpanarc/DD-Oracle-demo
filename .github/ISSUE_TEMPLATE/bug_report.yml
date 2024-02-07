@@ -13,10 +13,12 @@ body:
       description: Fetched by action
       options:
         - KalpanaReddyC-patch-1
+        - branch1
         - first
         - main
         - second
         - test
+        - testing
     validations:
       required: true
   - type: dropdown
