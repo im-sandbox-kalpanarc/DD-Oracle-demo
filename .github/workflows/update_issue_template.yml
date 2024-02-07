@@ -78,7 +78,7 @@ jobs:
             return github
               .rest.repos.listReleases(context.repo)
               .then((res) => {
-                const releases = res.data.map((r) => `${r.tag_name} ${new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }).replace(',', '')}`);
+                const releases = res.data.map((r) => `${r.tag_name}     ${new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }).replace(',', '')}`);
                 console.log(releases);
                 return releases;
               });
