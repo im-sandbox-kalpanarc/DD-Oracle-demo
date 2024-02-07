@@ -47,5 +47,6 @@ body:
         - v3.0     February 06 2024
         - v2.0     February 06 2024
         - v1.0     February 06 2024
+        - v0.1     February 06 2024
     validations:
       required: true
