@@ -144,5 +144,5 @@ runs:
             PUSHED=true
           fi
         fi
-        echo "::set-output name=pushed::$PUSHED"
+        echo "pushed=$PUSHED" >> "$GITHUB_OUTPUT"
       shell: bash

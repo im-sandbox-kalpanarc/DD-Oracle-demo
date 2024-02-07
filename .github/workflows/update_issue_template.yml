@@ -77,8 +77,12 @@ jobs:
           script: |
             return github
               .rest.repos.listReleases(context.repo)
-              .then((res) => res.data.map((r) => `${r.tag_name} ${new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}`));
-  
+              .then((res) => {
+                const releases = res.data.map((r) => `${r.tag_name} ${new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}`);
+                console.log(releases);
+                return releases;
+              });
+              
   update-bug-report:
     name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
     runs-on: ubuntu-latest
