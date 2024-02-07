@@ -90,9 +90,9 @@ jobs:
         with:
           result-encoding: string
           script: |
-            return github
-              .rest.repos.getAllEnvironments(context.repo)
-              .then((res) => res.data.map((e) => e.name));     
+             return github
+              .rest.repos.getAllEnvironments( ${{ github.event.organization.login }},context.repo)
+              .then((res) => res.data.map((b) => b.name));    
 
   update-bug-report:
     name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
