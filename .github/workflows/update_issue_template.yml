@@ -39,6 +39,7 @@ jobs:
       branch: ${{ steps.branch.outputs.job_ref }}
       branches: ${{ steps.branches.outputs.result }}
       releases: ${{ steps.releases.outputs.result }}
+      environments: ${{ steps.environments.outputs.result }}
     
     steps:
       - name: Setting branch for committing
@@ -83,6 +84,16 @@ jobs:
                 return releases;
               });
 
+      - name: Get environments
+        id: environments
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            return github
+              .rest.repos.getEnvironment(context.repo)
+              .then((res) => res.data.map((e) => e.name));     
+
   update-bug-report:
     name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
     runs-on: ubuntu-latest
@@ -110,7 +121,13 @@ jobs:
           dropdown: _releases
           options: ${{ needs.pre.outputs.releases }}
           dry_run: no-push
-      
-      - name: Pushed? ${{ steps.branches.outputs.modified }}
-        if: steps.branches.outputs.modified
-        run: git push 
+
+      - name: Update environments
+        id: environments
+        uses: ./actions/update-issue-form-template
+        with:
+          form: .github/ISSUE_TEMPLATE/issue_template.yml
+          dropdown: _environments
+          options: ${{ needs.pre.outputs.environments }}
+          dry_run: no-push
+    
