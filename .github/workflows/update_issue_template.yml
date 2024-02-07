@@ -5,7 +5,7 @@ on:
   create:
   delete:
   release:
-    types: [created, published, deleted]
+    types: [published, deleted]
 
 jobs:
   branch_event:
