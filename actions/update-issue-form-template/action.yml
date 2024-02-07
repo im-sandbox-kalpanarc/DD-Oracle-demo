@@ -105,7 +105,7 @@ runs:
         node ./dist/main.cjs
         if [[ $(git status --porcelain | grep -c '.*\s*${{ inputs.form }}') -eq 1 ]]; then
           echo "Form ${{ inputs.form }} has been modified"
-          echo "modified::true" >> "$GITHUB_OUTPUT""
+          echo "modified::true" >> "$GITHUB_OUTPUT"
         else
           echo "Form ${{ inputs.form }} is up to date"
           echo "modified::false" >> "$GITHUB_OUTPUT"
