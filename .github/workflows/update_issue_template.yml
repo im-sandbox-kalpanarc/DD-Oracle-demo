@@ -126,6 +126,9 @@ jobs:
           options: ${{ needs.pre.outputs.releases }}
           dry_run: no-push
 
+      - name: Print environment
+        run: echo ${{ needs.pre.outputs.environments }}
+
       - name: Update environments
         id: environments
         uses: ./actions/update-issue-form-template
