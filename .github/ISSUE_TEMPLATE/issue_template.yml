@@ -36,8 +36,9 @@ body:
       label: Repository releases
       description: Releases to deploy
       options:
-        - v8.0 Feb 07
+        - v9.0 Feb 07
         - '2024'
+        - v8.0 Feb 07
         - v7.0 Feb 07
         - 6 Feb 07
         - v4.0 Feb 07
