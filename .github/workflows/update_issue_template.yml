@@ -79,7 +79,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ needs.pre.outputs.branch }}
-          
+
       - name: Update branches
         id: branches
         uses: ./actions/update-issue-form-template
@@ -109,3 +109,7 @@ jobs:
           dropdown: _environments
           options: ${{ needs.pre.outputs.environments }}
           dry_run: no-push
+
+      - name: Pushed? ${{ steps.branches.outputs.modified }}
+        if: steps.branches.outputs.modified || steps.releases.outputs.modified || steps.environments.outputs.modified
+        run: git push origin ${{ needs.pre.outputs.branch }}
