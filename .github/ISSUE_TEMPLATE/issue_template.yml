@@ -18,6 +18,9 @@ body:
         - sec
         - second
         - test
+        - third
+        - fourth
+        - fifth
     validations:
       required: true
   - type: dropdown
