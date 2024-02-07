@@ -6,48 +6,22 @@ on:
     types: [published, deleted] 
 
 jobs:
-  # branch_event:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     branch_event_type: ${{ steps.branch_eventType.outputs.result }}
-  #   steps:
-  #     - name: Check if branch was created or deleted
-  #       id: branch_eventType
-  #       run: |
-  #        echo ${{ github.event_name }}
-  #        echo ${{ github.event.ref_type }}
-
-  #        #if event is for release or branch
-  #        if [ "${{ github.event_name }}" == "release" ]; then
-  #           echo "result=true" >> "$GITHUB_OUTPUT"
-  #         elif [ "${{ github.event_name }}" == "create" ]; then
-  #           echo "result=true" >> "$GITHUB_OUTPUT"
-  #         elif [ "${{ github.event_name }}" == "delete" ]; then
-  #           echo "result=true" >> "$GITHUB_OUTPUT"
-  #         else
-  #           echo "result=false" >> "$GITHUB_OUTPUT"
-  #         fi
-
   pre:
     name: Prepare context for other jobs
     runs-on: ubuntu-latest
-    #check if above job output value is branch
-    # needs: branch_event
-    # if: ${{ needs.branch_event.outputs.branch_event_type == 'true' }}
     outputs:
       # needed in order to reference the local action
       branch: ${{ steps.branch.outputs.job_ref }}
       branches: ${{ steps.branches.outputs.result }}
       releases: ${{ steps.releases.outputs.result }}
       environments: ${{ steps.environments.outputs.result }}
-    
     steps:
       - name: Setting branch for committing
         id: branch
         run: |
           BRANCH=""
           if [ ${{ github.event_name == 'release' }} == true ]; then
-            BRANCH=${{ github.event.release.target_commitish || github.sha }}
+            BRANCH=${{ github.event.release.target_commitish }}
           elif [ ${{ github.event_name == 'create' }} == true ]; then
             BRANCH=${{ github.event.repository.default_branch }}
           elif [ ${{ github.event_name == 'pull_request' }} == true ]; then
@@ -57,7 +31,6 @@ jobs:
           fi
           echo "job_ref=$BRANCH" >> $GITHUB_OUTPUT
           echo "Branch: $BRANCH"
-
       - name: Get branches
         id: branches
         uses: actions/github-script@v6
@@ -69,7 +42,6 @@ jobs:
             return github
               .rest.repos.listBranches(context.repo)
               .then((res) => res.data.map((b) => b.name));
-
       - name: Get releases
         id: releases
         uses: actions/github-script@v6
@@ -96,7 +68,7 @@ jobs:
                 const environments = res.data.environments;
                 console.log(environments);
                 return environments ? environments.map((b) => b.name) : [];
-              });    
+              });
 
   update-bug-report:
     name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
@@ -107,7 +79,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ needs.pre.outputs.branch }}
-
+          
       - name: Update branches
         id: branches
         uses: ./actions/update-issue-form-template
@@ -137,4 +109,3 @@ jobs:
           dropdown: _environments
           options: ${{ needs.pre.outputs.environments }}
           dry_run: no-push
-    
