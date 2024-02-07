@@ -11,13 +11,8 @@ body:
     attributes:
       label: Repository Branches
       description: Fetched by action
-      options:
-        - KalpanaReddyC-patch-1
-        - branch1
-        - first
-        - main
-        - second
-        - test
+      options:       
+        - main       
     validations:
       required: true
   - type: dropdown
