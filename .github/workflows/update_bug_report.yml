@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     #check if above job output value is no-push
     needs: branch_event
-    if: ${{ needs.branch_event.outputs.branch_event_type }} == 'no-push'
+    if: ${{ needs.branch_event.outputs.branch_event_type == 'no-push' }}
     outputs:
       # needed in order to reference the local action
       branch: ${{ steps.branch.outputs.job_ref }}
