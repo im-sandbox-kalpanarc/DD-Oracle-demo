@@ -1,0 +1,33 @@
+name: Bug Report
+description: File a bug report
+title: Template
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you begin
+  - type: dropdown
+    id: _branches
+    attributes:
+      label: Repository Branches
+      description: Fetched by action
+      options:
+        - KalpanaReddyC-patch-1
+        - first
+        - main
+        - second
+        - test
+    validations:
+      required: true
+  - type: dropdown
+    id: _releases
+    attributes:
+      label: Repository releases
+      description: Fetched by action
+      options:
+        - v4.0
+        - v3.0
+        - v2.0
+        - v1.0
+    validations:
+      required: true

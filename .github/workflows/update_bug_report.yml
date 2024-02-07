@@ -1,0 +1,113 @@
+name: 🚀 Update Issue template Report
+
+on:  
+
+  workflow_dispatch:
+  release:
+    types: [released]
+  push:
+    branches:
+      - '*'   
+
+jobs:
+  branch_event:
+    runs-on: ubuntu-latest
+    outputs:
+      branch_event_type: ${{ steps.branch_eventType.outputs.result }}
+    steps:
+      - name: Check if branch was created or deleted
+        id: branch_eventType
+        run: |
+          if [ "${{ github.event_name }}" = "create" ]; then
+            echo "Branch created: ${GITHUB_REF#refs/heads/}"
+            echo "result=no-push" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "delete" ]; then
+            echo "Branch deleted: ${GITHUB_REF#refs/heads/}"
+            echo "result=no-push" >> "$GITHUB_OUTPUT"
+          else
+            echo "Push event on existing branch: ${GITHUB_REF#refs/heads/}"
+            echo "result=push" >> "$GITHUB_OUTPUT"
+          fi
+
+  pre:
+    name: Prepare context for other jobs
+    runs-on: ubuntu-latest
+    #check if above job output value is no-push
+    needs: branch_event
+    if: ${{ needs.branch_event.outputs.branch_event_type }} == 'no-push'
+    outputs:
+      # needed in order to reference the local action
+      branch: ${{ steps.branch.outputs.job_ref }}
+      branches: ${{ steps.branches.outputs.result }}
+      releases: ${{ steps.releases.outputs.result }}
+    
+    steps:
+      - name: Setting branch for committing
+        id: branch
+        run: |
+          BRANCH=""
+          if [ ${{ github.event_name == 'release' }} == true ]; then
+            BRANCH=${{ github.event.release.target_commitish }}
+          elif [ ${{ github.event_name == 'create' }} == true ]; then
+            BRANCH=${{ github.event.repository.default_branch }}
+          elif [ ${{ github.event_name == 'pull_request' }} == true ]; then
+            BRANCH=${{ github.head_ref }}
+          else
+            BRANCH=${{ github.ref }}
+          fi
+          echo "job_ref=$BRANCH" >> $GITHUB_OUTPUT
+          echo "Branch: $BRANCH"
+
+      - name: Get branches
+        id: branches
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          # https://octokit.github.io/rest.js
+          # https://docs.github.com/en/rest/branches/branches#list-branches
+          script: |
+            return github
+              .rest.repos.listBranches(context.repo)
+              .then((res) => res.data.map((b) => b.name));
+
+      - name: Get releases
+        id: releases
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            return github
+              .rest.repos.listReleases(context.repo)
+              .then((res) => res.data.map((r) => r.tag_name));
+  
+  update-bug-report:
+    name: Update bug report on branch `${{ needs.pre.outputs.branch }}`
+    runs-on: ubuntu-latest
+    needs: pre
+    if: contains(github.actor, 'github-actions') == false
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.pre.outputs.branch }}
+
+      - name: Update branches
+        id: branches
+        uses: ./
+        with:
+          form: .github/ISSUE_TEMPLATE/bug_report.yml
+          dropdown: _branches
+          options: ${{ needs.pre.outputs.branches }}
+          dry_run: no-push
+
+      - name: Update releases
+        id: releases
+        uses: ./
+        with:
+          form: .github/ISSUE_TEMPLATE/bug_report.yml
+          dropdown: _releases
+          options: ${{ needs.pre.outputs.releases }}
+          dry_run: no-push
+      
+      - name: Pushed? ${{ steps.branches.outputs.modified }}
+        if: steps.branches.outputs.modified
+        run: git push 

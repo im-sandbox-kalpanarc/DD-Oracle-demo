@@ -1,0 +1,149 @@
+name: Issue Forms Dropdown Options
+description: Populates options for a version dropdown issue forms element
+author: ShaMan123
+branding:
+  icon: list
+  color: purple
+
+inputs:
+  github_token:
+    description: Github token
+    default: ${{ github.token }}
+  template:
+    description: |
+      The location of the template file used to build the form, useful for ease of maintenance.
+
+      Dynamic dropdowns will persist between action runs.
+      Static dropdowns (dropdowns with populated options) take precedence over their built counterpart,
+      meaning that you should not edit the built form ever,
+      see https://github.com/ShaMan123/gha-form-dropdown-options/pull/2/commits/7cbd904caccb60c9bf52f066d11b303e439fe598.
+
+      This behavior makes sense but could have been handled with ease if flagging dynamic dropdowns in forms was possible.
+      It might change to a stricter approach in the future using id prefixing.
+      It is suggested using the template option once in the first step updating the form and omitting it afterwards.
+    type: string
+  form:
+    description: The location of the yaml form file
+    type: string
+    required: true
+  dropdown:
+    description: |
+      The id of the dropdown in the yaml form to populate options into
+      Prefix the id with the value of `id_prefix`, see `strategy` for more details
+    type: string
+    required: true
+  options:
+    description: |
+      A stringified array of options
+      Supports the dynamic substitution templates: `{...}`, `{{...}}`
+    type: string
+    required: true
+  label:
+    description: |
+      The label of the dropdown
+      Supports the dynamic substitution templates: `{...}`, `{{...}}`
+    type: string
+  description:
+    description: |
+      The description of the dropdown
+      Supports the dynamic substitution templates: `{...}`, `{{...}}`
+    type: string
+  unique:
+    description: |
+      Whether `options` should be unique
+    type: boolean
+    default: true
+  commit_message:
+    description: 'defaults to `chore(): update [REPORT_NAME]`'
+    type: string
+  strategy:
+    description: |
+      The strategy used to determine if a dropdown is static or not.
+      The `empty-options` strategy determines if a dropdown is dynamic by checking if the template's options are empty.
+      The `id-prefix` strategy determines if a dropdown is dynamic or not by checking its id prefix depending on the value of `id_prefix`.
+      `id-prefix` is strict and allows more flexibility, such as dynamic substitution.
+      The `mixed` strategy uses both.
+    type: choice
+    default: mixed
+    options:
+      - id-prefix
+      - empty-options
+      - mixed
+  id_prefix:
+    description: |
+      The prefix used by `strategy` to determine if a dropdown is dynamic
+    type: string
+    default: _
+  dry_run:
+    description: |
+      Pass `no-write` to leave `form` untouched
+      Pass `no-commit` to leave the git history untouched
+      Pass `no-push` to leave the commit untouched
+    type: choice
+    options:
+      - no-write
+      - no-commit
+      - no-push
+
+# https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs#example-defining-outputs-for-a-job
+outputs:
+  form:
+    description: JSON stringified form
+    value: ${{ steps.process.outputs.form }}
+  modified:
+    description: form has been modified by action
+    value: ${{ steps.process.outputs.modified }}
+  pushed:
+    description: pushed to origin
+    value: ${{ steps.commit.outputs.pushed || false }}
+
+runs:
+  using: composite
+  steps:
+    - name: Update ${{ inputs.form }}
+      id: process
+      run: |
+        node ${{ github.action_path }}/dist/main.cjs
+        if [[ $(git status --porcelain | grep -c '.*\s*${{ inputs.form }}') -eq 1 ]]; then
+          echo "Form ${{ inputs.form }} has been modified"
+          echo "::set-output name=modified::true"
+        else
+          echo "Form ${{ inputs.form }} is up to date"
+          echo "::set-output name=modified::false"
+        fi
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        INPUT_TEMPLATE: ${{ inputs.template }}
+        INPUT_FORM: ${{ inputs.form }}
+        INPUT_DROPDOWN: ${{ inputs.dropdown }}
+        INPUT_OPTIONS: ${{ inputs.options }}
+        INPUT_LABEL: ${{ inputs.label }}
+        INPUT_DESCRIPTION: ${{ inputs.description }}
+        INPUT_UNIQUE: ${{ inputs.unique }}
+        INPUT_STRATEGY: ${{ inputs.strategy }}
+        INPUT_ID_PREFIX: ${{ inputs.id_prefix }}
+        INPUT_DRY_RUN: ${{ inputs.dry_run }}
+    - name: Commit & Push
+      id: commit
+      run: |
+        git config user.name github-actions[bot]
+        git config user.email github-actions[bot]@users.noreply.github.com
+        PUSHED=false
+        if [[ ${{ steps.process.outputs.modified }} == true ]] && [[ ${{ inputs.dry_run != 'no-commit' }} == true ]]; then
+          echo "Committing ${{ inputs.form }}"
+          git add ${{ inputs.form }}
+          MSG='${{ inputs.commit_message }}'
+          if [[ $MSG == '' ]]; then
+            MSG='chore(): update ${{ fromJSON(steps.process.outputs.form).name }}'
+          fi
+          git commit -m "$MSG"
+          if [[ ${{ inputs.dry_run != 'no-push' }} == true ]]; then
+            echo "Pushing to upstream"
+            git pull --ff-only
+            git push
+            PUSHED=true
+          fi
+        fi
+        echo "::set-output name=pushed::$PUSHED"
+      shell: bash

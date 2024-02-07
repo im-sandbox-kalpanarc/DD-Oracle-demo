@@ -1,0 +1,23 @@
+name: Issue Template
+description: Sample description for an issue template
+title: Issue Template
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Issue Template
+        This is a sample issue template.
+  - type: input
+    id: example_input
+    attributes:
+      label: Example Input
+      description: This is an example input field
+      placeholder: Example input placeholder
+  - type: dropdown
+    id: _branchNames
+    attributes:
+      label: Branch Name
+      description: branch name
+      options:
+        - main
+
