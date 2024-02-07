@@ -11,8 +11,13 @@ body:
     attributes:
       label: Repository Branches
       description: Branches to deploy
-      options:       
-        - main        
+      options:
+        - KalpanaReddyC-patch-1
+        - first
+        - main
+        - sec
+        - second
+        - test
     validations:
       required: true
   - type: dropdown
@@ -31,6 +36,6 @@ body:
       label: Repository releases
       description: Releases to deploy
       options:
-        - v10     February 07 2024       
+        - v10     February 07 2024
     validations:
       required: true
