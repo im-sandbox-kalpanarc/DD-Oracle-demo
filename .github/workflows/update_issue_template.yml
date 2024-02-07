@@ -2,7 +2,7 @@ name: 🚀 Update Issue template Report
 
 on:  
   release:
-    types: [published]
+    types: [released]
   create:   
   delete:
     
