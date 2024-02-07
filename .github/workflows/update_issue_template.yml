@@ -1,10 +1,8 @@
 name: 🚀 Update Issue template Report
 
 on:  
-
-  workflow_dispatch:
   release:
-    types: [created, deleted]
+    types: [published]
   create:   
   delete:
     
