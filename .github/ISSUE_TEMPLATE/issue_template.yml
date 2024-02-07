@@ -26,6 +26,8 @@ body:
       label: Repository releases
       description: Fetched by action
       options:
+        - v7.0
+        - '6'
         - v4.0
         - v3.0
         - v2.0
